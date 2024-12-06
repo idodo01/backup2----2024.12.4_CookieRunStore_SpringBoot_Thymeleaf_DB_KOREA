@@ -15,7 +15,7 @@ import java.util.Random;
 @Log4j2
 @Service
 public class EmailService {
-    private final String FROM = "fnvit@naver.com";
+    private final String FROM = "idodo07@naver.com";
     private final String EMAIL_CERT_TEMPLATE = "/mail/email-auth-template.html";
     @Autowired private JavaMailSender mailSender;
     @Autowired private TemplateEngine templateEngine;
