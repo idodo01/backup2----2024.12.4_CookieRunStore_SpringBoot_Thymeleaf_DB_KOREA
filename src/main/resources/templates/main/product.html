@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>상품 | KOREA STORE</title>
+    <link rel="stylesheet" href="../../static/css/main/product.css">
+    <script src="../../static/js/main/product.js" defer></script>
+</head>
+<body>
+    <main>
+        <article>
+            <section>
+                <div class="main-image-container">
+<!--                    <img src="https://jp.cookierunstore.com/web/product/extra/big/202411/414f8e927c2aad938b63f427ad9a31e4.png" alt="메인이미지">-->
+<!--                    <img th:src="|data:image/*; base64, ${product.images[0].data}|" alt="">-->
+
+                    <img th:src="@{|/image/${product.images[0].no}|}" alt="메인이미지">
+                </div>
+                <div class="sub-image-container">
+                    <button th:each="image,stat: ${product.images}" th:unless="${stat.first}">
+                        <img th:src="@{|/image/${image.no}|}" alt="메인이미지">
+                    </button>
+<!--                    <button type="button">-->
+<!--                        <img src="https://jp.cookierunstore.com/web/product/small/202411/09153bc9928c5a5af354bc8f54b475ba.png" alt="">-->
+<!--                    </button>-->
+                </div>
+            </section>
+
+            <form>
+                <header>
+                    <div>
+                        <b>상품명</b>
+                        <h3 th:text="${product.name}">クッキーランミニシールセット3種：第2弾</h3>
+                    </div>
+                    <div>
+                        <b>상품가격</b>
+                        <span th:text="${#numbers.formatCurrency(product.price)}">999,999원</span>
+                    </div>
+                    <label th:if="${product.options != null and not product.options.isEmpty()}">
+                        <b>옵션</b>
+                        <select id="product-option-select">
+                            <option selected disabled>옵션을 선택해주세요</option>
+                            <option th:each="option: ${product.options}" th:text="|${option.name} (+${#numbers.formatInteger(option.price, 1, 'COMMA')}원)|"></option>
+<!--                            <option>クッキーランミニシールセット3種：第2弾 (+888원)</option>-->
+                        </select>
+                    </label>
+                </header>
+                
+                <ul id="product-option-ul">
+<!--                    <li>-->
+<!--                        <b>クッキーランミニシールセット3種：第2弾</b>-->
+<!--                        <label>-->
+<!--                            <button type="button" class="amount-minus-btn"><i class="bi bi-dash-lg"></i></button>-->
+<!--                            <input type="number" value="1">-->
+<!--                            <button type="button" class="amount-plus-btn"><i class="bi bi-plus-lg"></i></button>-->
+<!--                        </label>-->
+<!--                        <button><i class="bi bi-x-square-fill"></i></button>-->
+<!--                        <span>888,888원</span>-->
+<!--                    </li>-->
+                </ul>
+                
+                <div class="total-container">
+                    <span>TOTAL:</span>
+                    <b th:text="${#numbers.formatCurrency(product.price)}">1,000,000원</b>
+                    <span>(총 1개)</span>
+                </div>
+                
+                <button type="submit" class="buy-btn">바로 구입</button>
+                <div class="button-container">
+                    <button type="button" class="cart-btn">카트에 담기</button>
+                    <button type="button" class="heart-btn">찜하기</button>
+                </div>
+            </form>
+        </article>
+
+        <nav id="product-info-navigator">
+            <ul>
+                <li>
+                    <a href="#product-info-section">
+                        <i class="bi bi-dash-lg"></i>
+                        <span>아이템정보</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#product-help-section">
+                        <i class="bi bi-dash-lg"></i>
+                        <span>헬프</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="bi bi-dash-lg"></i>
+                        <span>리뷰</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <section id="product-info-section">
+            <img src="https://devsisters.cafe24.com/web/upload/weskin36/jp/layout/notice_jp.png">
+            <div class="prouduct-img-container">
+                <img th:each="image: ${product.images}" th:src="@{|/image/${image.no}|}" alt="상세사진">
+<!--                <img src="https://jp.cookierunstore.com/web/upload/NNEditor/20241120/copy-1732075869-E18489E185B3E18490E185B5E1848FE185A52E18490E185A1E186ABE18489E185A1E186BCE18489E185A6.jpg" alt="">-->
+            </div>
+            <p th:utext="${product.detail}">
+                [クーポンの使用案内] <br>
+                - 2026/12/31まで使用可能です。<br>
+                - アカウントにつき3回まで使用可能です。<br>
+                <br><br>
+                [商品詳細]<br>
+                · サイズ：55*85mm<br>
+                · 材質：PVC、紙<br>
+                · 製造国：韓国<br>
+                · 販売者：Devsisters Corp.<br>
+                <br><br>
+                [商品取り扱いのご注意]<br>
+                - 本製品を用途以外の目的で使用しないでください。<br>
+                - 貼り付け面をきれいに拭いてから貼り付けてください。<br>
+                - 平らな面に貼り付けてください。<br>
+                - シールを無理に剥がしたり、引っ張ったりすると破損する恐れがあります。<br>
+                - 熱により変形する恐れがあります。火気に近づけないでください。<br>
+                - 顔や肌には貼らないでください。<br>
+                - 紙による切り傷や刺し傷に注意してください。<br>
+                - 直射日光、高温、湿気の多い場所を避けてください。<br>
+                - 貼り付け期間によってはベタつきや跡が残る場合があります。<br>
+            </p>
+        </section>
+
+        <section id="product-help-section">
+            <div>
+                <h4>지불에 대해서</h4>
+                <p>
+                    決済手段は下記のとおりです。<br>
+                    - クレジットカード決済<br>
+                    - Visa<br>
+                    - MasterCard<br>
+                    - American Express<br>
+                    - Discover<br>
+                    - PayPal
+                </p>
+            </div>
+            <div>
+                <h4>배송에 대해서</h4>
+                <p>
+                    配送方法 : 宅配 <br>
+                    配送地域 : 全国<br>
+                    送料 : ¥929 ~ ¥999,999<br>
+                    配送期間 : 2日 ~ 5日<br>
+                    配送ガイド : 商品種類によって商品準備及び発送が若干遅延される場合があります。<br>
+                    当日発送はできませんのでご了承ください。<br>
+                    - 配送案内 : お客様がご注文された商品は、ご入金確認後の発送とさせていただきます。<br>
+                    返品及び交換の際には、必ず運営スタッフへご連絡ください。<br>
+                    <br><br>
+                    - 通関及び関税<br>
+                    海外に物品などを送られる場合、相手国で関税等が発生することがございます。その場合、発生した関税等は受取人のご負担となりますので、ご了承ください。関税は相手国での徴収であり、本サイトとは関連がありません。<br>
+                    受取拒否によって韓国に返送された商品は再発送は行いません。その過程で発生した費用は購買者の負担となります。<br>
+                    発生した実費(国際運送往復費用及び韓国通関費、関税を含む)を除いて残り金額のみが払戻しできます。<br>
+                    商品種類によって商品準備及び発送が若干遅延される場合があります。<br>
+                    当日発送はできませんのでご了承ください。<br>
+                    - 配送案内 : お客様がご注文された商品は、ご入金確認後の発送とさせていただきます。<br>
+                    返品及び交換の際には、必ず運営スタッフへご連絡ください。<br>
+                    <br><br>
+                    - 通関及び関税<br>
+                    海外に物品などを送られる場合、相手国で関税等が発生することがございます。その場合、発生した関税等は受取人のご負担となりますので、ご了承ください。関税は相手国での徴収であり、本サイトとは関連がありません。<br>
+                    受取拒否によって韓国に返送された商品は再発送は行いません。その過程で発生した費用は購買者の負担となります。<br>
+                    発生した実費(国際運送往復費用及び韓国通関費、関税を含む)を除いて残り金額のみが払戻しできます。
+                </p>
+            </div>
+        </section>
+
+
+    </main>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
