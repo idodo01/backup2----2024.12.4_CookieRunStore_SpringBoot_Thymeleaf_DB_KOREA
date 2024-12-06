@@ -2,6 +2,7 @@ package com.koreait.store.controller;
 
 import com.koreait.store.service.EmailService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,8 @@ public class MainRestController {
     @GetMapping("/email/auth")
     public ResponseEntity<Void> get_email_auth(
             @RequestParam String email, // 인증을 시도한 이메일
-            @RequestParam String certNumber // 발급된 인증번호
+            @RequestParam String certNumber, // 발급된 인증번호
+            HttpSession session // 회원가입 시 인증 완료 여부를 설정하기 위한 세션
     ) {
         // 해당 이메일에 대해서 서버가 알고 있는 인증번호를 가져온다
         String createdCertNumber = emailCertRepository.get(email);
@@ -29,6 +31,8 @@ public class MainRestController {
         if (createdCertNumber == null || !createdCertNumber.equals(certNumber)) {
             return ResponseEntity.notFound().build(); // 인증 실패!
         }
+        session.setAttribute("emailAuth", email); // 이 세션에서 인증이 성공했다고 판단한다
+        emailCertRepository.remove(email); // 인증번호 일치 여부는 삭제해도 된다
         return ResponseEntity.ok().build(); // 인증 성공!
     }
 

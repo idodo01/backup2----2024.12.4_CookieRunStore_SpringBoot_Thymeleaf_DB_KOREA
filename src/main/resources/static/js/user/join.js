@@ -14,6 +14,8 @@ const emailAuthConfirmInput = document.querySelector('.email-auth-input-containe
 const emailAuthConfirmBtn = document.querySelector('.email-auth-input-container button');
 const [joinBtn, cancelBtn] = document.querySelectorAll('.join-btn-section > button');
 const [idInputError, pwInputError, telInputError, emailInputError] = document.querySelectorAll('.error-container');
+
+let emailAuthCompleted = false; // 이메일 인증 여부
 /************************************************************************/
 // id 중복 체크 버튼 클릭 시
 idCheckBtn.onclick = () => {
@@ -26,7 +28,7 @@ idCheckBtn.onclick = () => {
         .then(response => {
             idCheckInput.value = id;
             idCheckValidInput.value = false;
-            
+
             switch (response.status){
                 case 200:
                     alert('해당 아이디는 사용 가능합니다^-^');
@@ -53,15 +55,41 @@ emailSelect.onchange = () => {
 }
 /// 이메일 인증 버튼 클릭 시
 emailAuthBtn.onclick = () => {
+    // CSRF 토큰 값을 가져온다
+    const csrfToken = document.forms[0].querySelector('input[name=_csrf]').value;
     const email = `${emailHead.value}@${emailTail.value}`;
+    emailAuthCompleted = false;
     fetch(`/email/auth`, {
         method: "POST",
-        
+        headers: {'X-CSRF-TOKEN' : csrfToken},
         body: email
+    }).then(response => {
+        if(response.ok && response.status === 200){
+            alert('인증번호를 발송했습니다!');
+        }else{
+            alert('인증번호 전송에 실패했습니다')
+        }
     });
 }
-
-
+/// 이메일 인증 확인 버튼 클릭 시
+emailAuthConfirmBtn.onclick = () => {
+    // 사용자가 입력한 인증번호를 가져옴
+    const certNumber = emailAuthConfirmInput.value;
+    const email = `${emailHead.value}@${emailTail.value}`;
+    fetch(`/email/auth?email=${email}&certNumber=${certNumber}`)
+        .then(response => {
+            if(response.ok && response.status === 200){
+                alert('인증 성공');
+                emailAuthCompleted = true;
+                // 인증번호 입력과 버튼 클릭 못하게 막음
+                emailAuthConfirmInput.setAttribute('disabled', '');
+                emailAuthConfirmBtn.setAttribute('disabled', '');
+            }else{
+                emailAuthCompleted = false;
+                alert('인증번호가 다릅니다');
+            }
+        })
+}
 
 
 ///// ********** 입력 검사
@@ -124,14 +152,20 @@ joinBtn.onclick = (event) => {
     // if(!check_input_values()){
     //     event.preventDefault();
     // }
-    
+
     const id = idCheckInput.value;
     const valid = idCheckValidInput.value;
     // 현재 회원가입하려고 하는 아이디가, 중복체크해서 사용한 아이디와 다르며
     // 중복체크를 통과하지 못했다면 회원가입을 시키면 안된다
     if(idInput.value !== id || valid === 'false'){
-        alert('중복 체크 해주세요~');
+        alert('ID 중복 체크는 필수입니다');
         event.preventDefault();
+        return;
+    }
+    if(!emailAuthCompleted){
+        alert('이메일 인증은 필수입니다');
+        event.preventDefault();
+        return;
     }
 }
 
